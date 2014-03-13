@@ -17,14 +17,15 @@ class DjangoModelSerializer(Serializer):
             self.fields = ret
             return self.fields
 
+        django_fields = set([field.name for field in obj._meta.fields])
         if self.opts.fields:
             # Return only fields specified in fields option
             field_names = set(self.opts.fields)
         elif self.opts.additional:
             # Return declared fields + additional fields
-            field_names = set(self.declared_fields.keys()) | set(self.opts.additional) | set([field.name for field in obj._meta.fields])
+            field_names = set(self.declared_fields.keys()) | set(self.opts.additional) | django_fields
         else:
-            field_names = set(self.declared_fields.keys()) | set([field.name for field in obj._meta.fields])
+            field_names = set(self.declared_fields.keys()) | django_fields
 
         # If "exclude" option or param is specified, remove those fields
         excludes = set(self.opts.exclude) | set(self.exclude)
